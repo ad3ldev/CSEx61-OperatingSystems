@@ -10,7 +10,7 @@
 
 void parent_main(){
     register_child_signal(on_child_exit());
-    setup_enviroment();
+    setup_environment();
     shell();
 }
 
@@ -19,7 +19,7 @@ int on_child_exit(){
     write_to_log_file("Child terminated");
 }
 
-void setup_enviroment(){
+void setup_environment(){
     cd(Current_Working_Directory);
 }
 
