@@ -1,5 +1,12 @@
-#include <stdio.h>
 #include <signal.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/types.h>
+#include<sys/wait.h>
+#include<readline/readline.h>
+#include<readline/history.h>
 
 void parent_main(){
     register_child_signal(on_child_exit());
