@@ -76,7 +76,5 @@ int main(int argc, char const *argv[])
     pid_t pid;
 	pid = fork();
 	printf("%d\n", pid);
-	pid = fork();
-	printf("%d\n", pid);
 	return 0;
 }
