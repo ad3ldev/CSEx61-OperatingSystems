@@ -15,7 +15,51 @@
 
 char input[1024];
 char * list[256];
+char acOpen[]  = {"\""};
+char acClose[] = {"\""};
 int running = 1;
+
+
+char *parse_input ( char *input, char *delimit, char *openblock, char *closeblock) {
+	static char *token = NULL;
+	char *lead = NULL;
+	char *block = NULL;
+	int iBlock = 0;
+	int iBlockIndex = 0;
+	if ( input != NULL) {
+		token = input;
+		lead = input;
+	}
+	else {
+		lead = token;
+		if ( *token == '\0') {
+			lead = NULL;
+		}
+	}
+	while ( *token != '\0') {
+		if ( iBlock) {
+			if ( closeblock[iBlockIndex] == *token) {
+				iBlock = 0;
+			}
+			token++;
+			continue;
+		}
+		if ( ( block = strchr ( openblock, *token)) != NULL) {
+			iBlock = 1;
+			iBlockIndex = block - openblock;
+			token++;
+			continue;
+		}
+		if ( strchr ( delimit, *token) != NULL) {
+			*token = '\0';
+			token++;
+			break;
+		}
+		token++;
+	}
+	return lead;
+}
+
 
 void empty_list(int size){
 	for(int i=0;i<size;i++){
@@ -41,8 +85,14 @@ int evaluate_expression(){
 			char b_quote[strlen(list[i])];
 			strncpy(b_quote, list[i], strlen(list[i]));
 			char without[sizeof(b_quote)-2];
-			for(int j = 0; j<sizeof(without);j++){
-				without[j]=b_quote[j+1];
+			int j = 0;
+			int k = 0;
+			while(j<sizeof(b_quote)){
+				if (b_quote[j]!='"') {
+					without[k]=b_quote[j];
+					k++;
+				}
+				j++;
 			}
 			strcpy(list[i], without);
 		}if(regexec(&regex_dollar, list[i], 0, NULL, 0)!=REG_NOMATCH){
@@ -90,7 +140,7 @@ void execute_shell_bultin(char * command, int size){
 				int j = 0;
 				while(token!=NULL){
 					equation[j]=token;
-					token = strtok(NULL, " ");
+					token = strtok(NULL, "=");
 					j++;
 				}
 				setenv(equation[0], equation[1], 1);
@@ -111,6 +161,29 @@ void execute_command(char * command, int size){
 		background = 1;
 		list[size-1]=NULL;
 	}
+	regex_t regex_space;
+	regcomp(&regex_space, " ", 0);
+	int tempsize = size;
+	for(int i=0;i<size;i++){
+		if(regexec(&regex_space, list[i], 0, NULL, 0)!=REG_NOMATCH){
+			char space[strlen(list[i])];
+			strncpy(space, list[i], strlen(list[i]));
+			char * parts[100];
+			int j = 0;
+			char * token = parse_input( list[i], " ", acOpen, acClose);
+			parts[j]=token;
+			j++;
+			while(( token = parse_input ( NULL, " ", acOpen, acClose)) != NULL){
+				parts[j]=token;
+				j++;
+			}
+			for(int k = 0; k<j;k++){
+				list[k+i]=parts[k];
+			}
+			tempsize = tempsize + j;
+		}
+	}
+	size = tempsize;
 	pid_t child_id = fork();
 	if (child_id == 0){
 		char* argument_list[size+1];
@@ -127,47 +200,6 @@ void execute_command(char * command, int size){
 		}
 	}
 }
-
-char *parse_input ( char *input, char *delimit, char *openblock, char *closeblock) {
-	static char *token = NULL;
-	char *lead = NULL;
-	char *block = NULL;
-	int iBlock = 0;
-	int iBlockIndex = 0;
-	if ( input != NULL) {
-		token = input;
-		lead = input;
-	}
-	else {
-		lead = token;
-		if ( *token == '\0') {
-			lead = NULL;
-		}
-	}
-	while ( *token != '\0') {
-		if ( iBlock) {
-			if ( closeblock[iBlockIndex] == *token) {
-				iBlock = 0;
-			}
-			token++;
-			continue;
-		}
-		if ( ( block = strchr ( openblock, *token)) != NULL) {
-			iBlock = 1;
-			iBlockIndex = block - openblock;
-			token++;
-			continue;
-		}
-		if ( strchr ( delimit, *token) != NULL) {
-			*token = '\0';
-			token++;
-			break;
-		}
-		token++;
-	}
-	return lead;
-}
-
 int checkcommand(char * command){
 	if(command==NULL){
 		return -1;
@@ -185,8 +217,6 @@ int checkcommand(char * command){
 
 void shell(){
 	char *tok;
-	char acOpen[]  = {"\""};
-	char acClose[] = {"\""};
 	do
 	{
 		fgets(input, sizeof(input), stdin);
