@@ -36,6 +36,11 @@ void execute_shell_bultin(){
 
 void execute_command(char * command, int size){
 	int status;
+	int background=0;
+	if(strcmp(list[size-1], "&")==0){
+		background = 1;
+		list[size-1]=NULL;
+	}
 	pid_t child_id = fork();
 	if (child_id == 0){
 		char* argument_list[size+1];
@@ -45,13 +50,11 @@ void execute_command(char * command, int size){
 		}
 		execvp(argument_list[0], argument_list);
 		//		print("Error");
-		exit(child_id);
 	}
-	//	}else if parent and foreground{
-	//		waitpid(child);
-	//	}
 	else{
-		waitpid(child_id, &status, 0);
+		if(!background){
+			waitpid(child_id, &status, 0);
+		}
 	}
 }
 
@@ -96,6 +99,9 @@ char *parse_input ( char *input, char *delimit, char *openblock, char *closebloc
 }
 
 int checkcommand(char * command){
+	if(command==NULL){
+		return -1;
+	}
 	if(strcmp(command, "cd")==0 || strcmp(command, "cd\n")==0){
 		return 1;
 	}else if(strcmp(command, "export")==0 || strcmp(command, "export\n")==0){
@@ -123,10 +129,15 @@ void shell(){
 			i++;
 		}
 		int command_size = evaluate_expression();
-		if (checkcommand(list[0])){
-			execute_shell_bultin();
-		}else{
-			execute_command(list[0], command_size);
+		switch (checkcommand(list[0])) {
+			case 1:
+				execute_shell_bultin();
+				break;
+			case 0:
+				execute_command(list[0], command_size);
+				break;
+			default:
+				break;
 		}
 	} while (strcmp(input, "exit"));
 }
@@ -134,16 +145,25 @@ void on_child_exit(){
 //     reap_child_zombie();
 //     write_to_log_file("Child terminated");
 }
-// void setup_environment(){
-//     cd(Current_Working_Directory);
-// }
+void setup_environment(){
+	long size;
+	char *buf;
+	char *ptr;
+	size = pathconf(".", _PC_PATH_MAX);
+	if ((buf = (char *)malloc((size_t)size)) != NULL){
+		ptr = getcwd(buf, (size_t)size);
+		chdir(ptr);
+		char * cmd = ("cd %s", ptr);
+		system(cmd);
+	}
+}
 
 
 
 void parent_main(){
 	signal (SIGCHLD, on_child_exit);
 //     register_child_signal(on_child_exit());
-//     setup_environment();
+	setup_environment();
 	shell();
 }
 
