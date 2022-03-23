@@ -18,12 +18,7 @@ char * list[256];
 char acOpen[]  = {"\""};
 char acClose[] = {"\""};
 int running = 1;
-char * get_env(char *key){
-	char ** env;
-    extern char ** environ;
-    env = environ;
-	return getenv(key);
-}
+
 void printenv() {
     char ** env;
     extern char ** environ;
@@ -115,8 +110,11 @@ int evaluate_expression(){
 			for(int j = 0; j<sizeof(without);j++){
 				without[j]=dollar[j+1];
 			}
-			char * value = get_env(without);
-				strcpy(list[i], value);
+			if(getenv(without)!=NULL){
+				strcpy(list[i], getenv(without));
+			}else{
+				strcpy(list[i], "");
+			}
 		}
 	}
 	return size;
@@ -154,6 +152,7 @@ void execute_shell_bultin(char * command, int size){
 					j++;
 				}
 				setenv(equation[0], equation[1],1);
+				printenv();
 			}
 		}
 	}else if(strcmp(argument_list[0], "echo")==0){
@@ -229,7 +228,6 @@ void shell(){
 	char *tok;
 	do
 	{
-		// printenv();
 		fgets(input, sizeof(input), stdin);
 		tok = parse_input( input, " ", acOpen, acClose);
 		int i = 0;
