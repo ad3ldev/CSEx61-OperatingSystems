@@ -13,7 +13,7 @@
 #include <regex.h>
 #include <stdlib.h>
 
-
+extern char **environ;
 char input[1024];
 char * list[256];
 char acOpen[]  = {"\""};
@@ -67,7 +67,7 @@ void empty_list(int size){
 		list[i]=NULL;
 	}
 }
-int evaluate_expression(char * envp[]){
+int evaluate_expression(){
 	int size = 0;
 	regex_t regex_quote;
 	regex_t regex_dollar;
@@ -113,7 +113,7 @@ int evaluate_expression(char * envp[]){
 	return size;
 }
 
-void execute_shell_bultin(char * command, int size, char * envp[]){
+void execute_shell_bultin(char * command, int size){
 	char* argument_list[size+1];
 	for(int i = 0;i<=size;i++){
 		argument_list[i]=list[i];
@@ -216,7 +216,7 @@ int checkcommand(char * command){
 	}
 }
 
-void shell(char * envp[]){
+void shell(){
 	char *tok;
 	do
 	{
@@ -229,10 +229,10 @@ void shell(char * envp[]){
 			list[i] = tok;
 			i++;
 		}
-		int command_size = evaluate_expression(envp);
+		int command_size = evaluate_expression();
 		switch (checkcommand(list[0])) {
 			case 1:
-				execute_shell_bultin(list[0], command_size,envp);
+				execute_shell_bultin(list[0], command_size);
 				break;
 			case 0:
 				execute_command(list[0], command_size);
@@ -247,7 +247,7 @@ void on_child_exit(){
 //     reap_child_zombie();
 //     write_to_log_file("Child terminated");
 }
-void setup_environment(char * envp[]){
+void setup_environment(){
 	long size;
 	char *buf;
 	char *ptr;
@@ -260,14 +260,14 @@ void setup_environment(char * envp[]){
 
 
 
-void parent_main(char * envp[]){
+void parent_main(){
 	signal (SIGCHLD, on_child_exit);
 //     register_child_signal(on_child_exit());
-	setup_environment(envp);
-	shell(envp);
+	setup_environment();
+	shell();
 }
 
-int main(int argc, char const *argv[], char * envp[]){
-	parent_main(envp);
+int main(int argc, char const *argv[]){
+	parent_main();
 	return 0;
 }
