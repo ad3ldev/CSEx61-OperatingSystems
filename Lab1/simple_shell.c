@@ -10,15 +10,24 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/wait.h>
+#include <regex.h>
 
 char input[1024];
 char * list[256];
 int running = 1;
 
+void empty_list(int size){
+	for(int i=0;i<size;i++){
+		list[i]=NULL;
+	}
+}
 int evaluate_expression(){
 	int size = 0;
+	regex_t regex_quote;
+	regex_t regex_dollar;
+	regcomp(&regex_quote, "\".*\"", 0);
+	regcomp(&regex_dollar, "\\$", 0);
 	for (int i=0; i<sizeof(list);i++){
 		if(list[i]==NULL){
 			break;
@@ -26,8 +35,30 @@ int evaluate_expression(){
 			size++;
 		}
 	}
-	char * arguments [size];
 	list[size-1] = strtok(list[size-1], "\n");
+	for(int i = 0; i<size;i++){
+		if(regexec(&regex_quote, list[i], 0, NULL, 0)!=REG_NOMATCH){
+			char b_quote[strlen(list[i])];
+			strncpy(b_quote, list[i], strlen(list[i]));
+			char without[sizeof(b_quote)-2];
+			for(int j = 0; j<sizeof(without);j++){
+				without[j]=b_quote[j+1];
+			}
+			strcpy(list[i], without);
+		}if(regexec(&regex_dollar, list[i], 0, NULL, 0)!=REG_NOMATCH){
+			char dollar[strlen(list[i])];
+			strncpy(dollar, list[i], strlen(list[i]));
+			char without[sizeof(dollar)-1];
+			for(int j = 0; j<sizeof(without);j++){
+				without[j]=dollar[j+1];
+			}
+			if(getenv(without)==NULL){
+				strcpy(list[i], " ");
+			}else{
+				strcpy(list[i], getenv(without));
+			}
+		}
+	}
 	return size;
 }
 
@@ -38,8 +69,38 @@ void execute_shell_bultin(char * command, int size){
 		list[i]=NULL;
 	}
 	if(strcmp(argument_list[0], "cd")==0){
+		if(argument_list[1]==NULL){
+			chdir(getenv("HOME"));
+		}else if(strcmp(argument_list[1], "..")==0){
+			chdir("..");
+		}else if(strcmp(argument_list[1], "~")==0) {
+			chdir(getenv("HOME"));
+		}else{
+			chdir(argument_list[1]);
+		}
 	}else if (strcmp(argument_list[0], "export")==0){
+		regex_t regex_equal;
+		regcomp(&regex_equal, "=", 0);
+		for(int i=1;i<size;i++){
+			if(regexec(&regex_equal, argument_list[i], 0, NULL, 0)!=REG_NOMATCH){
+				char equal[strlen(argument_list[i])];
+				strncpy(equal, argument_list[i], strlen(argument_list[i]));
+				char * token = strtok(equal, "=");
+				char * equation[2];
+				int j = 0;
+				while(token!=NULL){
+					equation[j]=token;
+					token = strtok(NULL, " ");
+					j++;
+				}
+				setenv(equation[0], equation[1], 1);
+			}
+		}
 	}else if(strcmp(argument_list[0], "echo")==0){
+		for(int i=1; i<size;i++){
+			printf("%s ", argument_list[i]);
+		}
+		printf("\n");
 	}
 }
 
@@ -148,6 +209,7 @@ void shell(){
 			default:
 				break;
 		}
+		empty_list(command_size);
 	} while (running);
 }
 void on_child_exit(){
