@@ -25,14 +25,21 @@ void execute_shell_bultin(){
 }
 
 void execute_command(){
-//	child_id = fork();
-//	if child{
-//		execvp(command_parsed);
-//		print("Error");
-//		exit();
-//	}else if parent and foreground{
-//		waitpid(child);
-//	}
+	int status;
+	pid_t child_id = fork();
+	if (child_id == 0){
+		printf("Hello from Child!\n");
+		//		execvp(command_parsed);
+		//		print("Error");
+		exit(child_id);
+	}
+	//	}else if parent and foreground{
+	//		waitpid(child);
+	//	}
+	else{
+		waitpid(child_id, &status, 0);
+		printf("Hello from Parent!\n");
+	}
 }
 
 char *parse_input ( char *input, char *delimit, char *openblock, char *closeblock) {
@@ -76,10 +83,15 @@ char *parse_input ( char *input, char *delimit, char *openblock, char *closebloc
 }
 
 int checkcommand(char * command){
-	if(strcmp(command, "cd") || strcmp(command, "export") || strcmp(command, "echo") ){
+	if(strcmp(command, "cd")==0){
 		return 1;
+	}else if(strcmp(command, "export")==0){
+		return 1;
+	}else if(strcmp(command, "echo")==0){
+		return 1;
+	}else{
+		return 0;
 	}
-	return 0;
 }
 
 void shell(){
@@ -112,6 +124,8 @@ void shell(){
 // void setup_environment(){
 //     cd(Current_Working_Directory);
 // }
+
+
 
 void parent_main(){
 //     register_child_signal(on_child_exit());
