@@ -15,6 +15,7 @@
 
 char input[1024];
 char * list[256];
+int running = 1;
 
 int evaluate_expression(){
 	int size = 0;
@@ -57,7 +58,7 @@ void execute_command(char * command, int size){
 			list[i]=NULL;
 		}
 		execvp(argument_list[0], argument_list);
-		//		print("Error");
+		printf("Invalid Command\n");
 	}
 	else{
 		if(!background){
@@ -110,6 +111,10 @@ int checkcommand(char * command){
 	if(command==NULL){
 		return -1;
 	}
+	if(strcmp(command,"exit")==0){
+		running = 0;
+		return 2;
+	}
 	if(strcmp(command, "cd")==0 || strcmp(command, "echo")==0 || strcmp(command, "export")==0 ){
 		return 1;
 	}else{
@@ -143,7 +148,7 @@ void shell(){
 			default:
 				break;
 		}
-	} while (strcmp(input, "exit"));
+	} while (running);
 }
 void on_child_exit(){
 //     reap_child_zombie();
@@ -157,8 +162,6 @@ void setup_environment(){
 	if ((buf = (char *)malloc((size_t)size)) != NULL){
 		ptr = getcwd(buf, (size_t)size);
 		chdir(ptr);
-		char * cmd = ((void)("cd %s"), ptr);
-		system(cmd);
 	}
 }
 
