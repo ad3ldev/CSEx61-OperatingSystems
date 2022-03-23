@@ -16,20 +16,34 @@
 char input[1024];
 char * list[256];
 
-void evaluate_expression(){
-	
+int evaluate_expression(){
+	int size = 0;
+	for (int i=0; i<sizeof(list);i++){
+		if(list[i]==NULL){
+			break;
+		}else{
+			size++;
+		}
+	}
+	char * arguments [size];
+	list[size-1] = strtok(list[size-1], "\n");
+	return size;
 }
 
 void execute_shell_bultin(){
-	printf("hey\n");
+//	printf("hey\n");
 }
 
-void execute_command(){
+void execute_command(char * command, int size){
 	int status;
 	pid_t child_id = fork();
 	if (child_id == 0){
-		printf("Hello from Child!\n");
-		//		execvp(command_parsed);
+		char* argument_list[size+1];
+		for(int i = 0;i<=size;i++){
+			argument_list[i]=list[i];
+			list[i]=NULL;
+		}
+		execvp(argument_list[0], argument_list);
 		//		print("Error");
 		exit(child_id);
 	}
@@ -38,7 +52,6 @@ void execute_command(){
 	//	}
 	else{
 		waitpid(child_id, &status, 0);
-		printf("Hello from Parent!\n");
 	}
 }
 
@@ -109,18 +122,18 @@ void shell(){
 			list[i] = tok;
 			i++;
 		}
-		evaluate_expression();
+		int command_size = evaluate_expression();
 		if (checkcommand(list[0])){
 			execute_shell_bultin();
 		}else{
-			execute_command();
+			execute_command(list[0], command_size);
 		}
 	} while (strcmp(input, "exit"));
 }
- void on_child_exit(){
+void on_child_exit(){
 //     reap_child_zombie();
 //     write_to_log_file("Child terminated");
- }
+}
 // void setup_environment(){
 //     cd(Current_Working_Directory);
 // }
