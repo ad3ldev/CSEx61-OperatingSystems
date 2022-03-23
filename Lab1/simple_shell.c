@@ -30,8 +30,16 @@ int evaluate_expression(){
 	return size;
 }
 
-void execute_shell_bultin(){
-//	printf("hey\n");
+void execute_shell_bultin(char * command, int size){
+	char* argument_list[size+1];
+	for(int i = 0;i<=size;i++){
+		argument_list[i]=list[i];
+		list[i]=NULL;
+	}
+	if(strcmp(argument_list[0], "cd")==0){
+	}else if (strcmp(argument_list[0], "export")==0){
+	}else if(strcmp(argument_list[0], "echo")==0){
+	}
 }
 
 void execute_command(char * command, int size){
@@ -102,11 +110,7 @@ int checkcommand(char * command){
 	if(command==NULL){
 		return -1;
 	}
-	if(strcmp(command, "cd")==0 || strcmp(command, "cd\n")==0){
-		return 1;
-	}else if(strcmp(command, "export")==0 || strcmp(command, "export\n")==0){
-		return 1;
-	}else if(strcmp(command, "echo")==0 || strcmp(command, "echo\n")==0){
+	if(strcmp(command, "cd")==0 || strcmp(command, "echo")==0 || strcmp(command, "export")==0 ){
 		return 1;
 	}else{
 		return 0;
@@ -131,7 +135,7 @@ void shell(){
 		int command_size = evaluate_expression();
 		switch (checkcommand(list[0])) {
 			case 1:
-				execute_shell_bultin();
+				execute_shell_bultin(list[0], command_size);
 				break;
 			case 0:
 				execute_command(list[0], command_size);
@@ -153,7 +157,7 @@ void setup_environment(){
 	if ((buf = (char *)malloc((size_t)size)) != NULL){
 		ptr = getcwd(buf, (size_t)size);
 		chdir(ptr);
-		char * cmd = ("cd %s", ptr);
+		char * cmd = ((void)("cd %s"), ptr);
 		system(cmd);
 	}
 }
