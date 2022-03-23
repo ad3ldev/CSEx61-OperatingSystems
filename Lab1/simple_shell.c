@@ -117,10 +117,10 @@ void shell(){
 		}
 	} while (strcmp(input, "exit"));
 }
-// int on_child_exit(){
+void on_child_exit(){
 //     reap_child_zombie();
 //     write_to_log_file("Child terminated");
-// }
+}
 // void setup_environment(){
 //     cd(Current_Working_Directory);
 // }
@@ -134,6 +134,7 @@ void parent_main(){
 }
 
 int main(int argc, char const *argv[]){
+	signal (SIGCHLD, on_child_exit);
 	parent_main();
 	return 0;
 }
