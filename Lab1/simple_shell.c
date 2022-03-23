@@ -19,14 +19,6 @@ char acOpen[]  = {"\""};
 char acClose[] = {"\""};
 int running = 1;
 
-void printenv() {
-    char ** env;
-    extern char ** environ;
-    env = environ;
-    for (env; *env; ++env) {
-        printf("%s\n", *env);
-    }
-}
 
 char *parse_input ( char *input, char *delimit, char *openblock, char *closeblock) {
 	static char *token = NULL;
@@ -106,10 +98,11 @@ int evaluate_expression(){
 		}if(regexec(&regex_dollar, list[i], 0, NULL, 0)!=REG_NOMATCH){
 			char dollar[strlen(list[i])];
 			strncpy(dollar, list[i], strlen(list[i]));
-			char without[sizeof(dollar)-1];
+			char without[sizeof(dollar)];
 			for(int j = 0; j<sizeof(without);j++){
 				without[j]=dollar[j+1];
 			}
+			without[sizeof(without)-1]= '\0';
 			if(getenv(without)!=NULL){
 				strcpy(list[i], getenv(without));
 			}else{
@@ -152,7 +145,6 @@ void execute_shell_bultin(char * command, int size){
 					j++;
 				}
 				setenv(equation[0], equation[1],1);
-				printenv();
 			}
 		}
 	}else if(strcmp(argument_list[0], "echo")==0){
@@ -262,8 +254,7 @@ void setup_environment(){
 	size = pathconf(".", _PC_PATH_MAX);
 	if ((buf = (char *)malloc((size_t)size)) != NULL){
 		ptr = getcwd(buf, (size_t)size);
-		// chdir(ptr);
-		system("pwd");
+		chdir(ptr);
 	}
 }
 
