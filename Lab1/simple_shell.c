@@ -21,7 +21,7 @@ void evaluate_expression(){
 }
 
 void execute_shell_bultin(){
-	printf("hey");
+	printf("hey\n");
 }
 
 void execute_command(){
@@ -83,11 +83,11 @@ char *parse_input ( char *input, char *delimit, char *openblock, char *closebloc
 }
 
 int checkcommand(char * command){
-	if(strcmp(command, "cd")==0){
+	if(strcmp(command, "cd")==0 || strcmp(command, "cd\n")==0){
 		return 1;
-	}else if(strcmp(command, "export")==0){
+	}else if(strcmp(command, "export")==0 || strcmp(command, "export\n")==0){
 		return 1;
-	}else if(strcmp(command, "echo")==0){
+	}else if(strcmp(command, "echo")==0 || strcmp(command, "echo\n")==0){
 		return 1;
 	}else{
 		return 0;
