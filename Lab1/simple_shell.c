@@ -13,13 +13,25 @@
 #include <regex.h>
 #include <stdlib.h>
 
-extern char **environ;
 char input[1024];
 char * list[256];
 char acOpen[]  = {"\""};
 char acClose[] = {"\""};
 int running = 1;
-
+char * get_env(char *key){
+	char ** env;
+    extern char ** environ;
+    env = environ;
+	return getenv(key);
+}
+void printenv() {
+    char ** env;
+    extern char ** environ;
+    env = environ;
+    for (env; *env; ++env) {
+        printf("%s\n", *env);
+    }
+}
 
 char *parse_input ( char *input, char *delimit, char *openblock, char *closeblock) {
 	static char *token = NULL;
@@ -103,11 +115,8 @@ int evaluate_expression(){
 			for(int j = 0; j<sizeof(without);j++){
 				without[j]=dollar[j+1];
 			}
-			if(getenv(without)==NULL){
-				strcpy(list[i], " ");
-			}else{
-				strcpy(list[i], getenv(without));
-			}
+			char * value = get_env(without);
+				strcpy(list[i], value);
 		}
 	}
 	return size;
@@ -144,7 +153,7 @@ void execute_shell_bultin(char * command, int size){
 					token = strtok(NULL, "=");
 					j++;
 				}
-				setenv(equation[0], equation[1], 1);
+				setenv(equation[0], equation[1],1);
 			}
 		}
 	}else if(strcmp(argument_list[0], "echo")==0){
@@ -220,6 +229,7 @@ void shell(){
 	char *tok;
 	do
 	{
+		// printenv();
 		fgets(input, sizeof(input), stdin);
 		tok = parse_input( input, " ", acOpen, acClose);
 		int i = 0;
@@ -254,7 +264,8 @@ void setup_environment(){
 	size = pathconf(".", _PC_PATH_MAX);
 	if ((buf = (char *)malloc((size_t)size)) != NULL){
 		ptr = getcwd(buf, (size_t)size);
-		chdir(ptr);
+		// chdir(ptr);
+		system("pwd");
 	}
 }
 
