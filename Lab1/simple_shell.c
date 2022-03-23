@@ -16,6 +16,10 @@
 char input[1024];
 char * list[256];
 
+void evaluate_expression(){
+	
+}
+
 void execute_shell_bultin(){
 	printf("hey");
 }
@@ -84,8 +88,8 @@ void shell(){
 	char acClose[] = {"\""};
 	do
 	{
-		fgets(cmd, sizeof(cmd), stdin);
-		tok = parse_input( cmd, " ", acOpen, acClose);
+		fgets(input, sizeof(input), stdin);
+		tok = parse_input( input, " ", acOpen, acClose);
 		int i = 0;
 		list[i] = tok;
 		i++;
@@ -109,12 +113,10 @@ void shell(){
 //     cd(Current_Working_Directory);
 // }
 
-
-
 void parent_main(){
 //     register_child_signal(on_child_exit());
 //     setup_environment();
-    shell();
+	shell();
 }
 
 int main(int argc, char const *argv[]){
