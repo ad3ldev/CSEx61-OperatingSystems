@@ -62,8 +62,8 @@
 	}
 
 
-	void empty_list(int size){
-		for(int i=0;i<size;i++){
+	void empty_list(){
+		for(int i=0;i<256;i++){
 			list[i]=NULL;
 		}
 	}
@@ -78,6 +78,7 @@
 				break;
 			}else{
 				size++;
+				printf("%d\n", size);
 			}
 		}
 		list[size-1] = strtok(list[size-1], "\n");
@@ -225,6 +226,8 @@
 		char *tok;
 		do
 		{
+			empty_list();
+			printf("-> ");
 			fgets(input, sizeof(input), stdin);
 			tok = parse_input( input, " ", acOpen, acClose);
 			int i = 0;
@@ -245,8 +248,8 @@
 				default:
 					break;
 			}
-			empty_list(command_size);
 		} while (running);
+		printf(">>>>>>SHELL TERMINATED\n");
 	}
 	void on_child_exit(){
 		FILE * fpointer;
@@ -277,6 +280,7 @@
 	}
 
 	int main(int argc, char const *argv[]){
+		printf(">>>>>>SHELL HAS STARTED\n");
 		parent_main();
 		return 0;
 	}
