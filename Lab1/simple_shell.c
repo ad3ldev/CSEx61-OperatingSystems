@@ -250,7 +250,7 @@
 	}
 	void on_child_exit(){
 		FILE * fpointer;
-		fpointer =fopen(filename, "w");
+		fpointer =fopen(filename, "a");
 		fputs("Child terminated\n", fpointer);
 		fclose(fpointer);
 	//     reap_child_zombie();
