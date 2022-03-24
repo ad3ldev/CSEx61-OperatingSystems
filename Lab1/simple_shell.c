@@ -13,7 +13,15 @@ char acOpen[]  = {"\""};
 char acClose[] = {"\""};
 int running = 1;
 
-
+void on_child_exit(){
+	FILE * fpointer;
+	fpointer =fopen(filename, "a");
+	fputs("Child terminated\n", fpointer);
+	fclose(fpointer);
+	if(!running){
+		kill(0, SIGINT);
+	}
+}
 char *parse_input ( char *input, char *delimit, char *openblock, char *closeblock) {
 	static char *token = NULL;
 	char *lead = NULL;
@@ -69,7 +77,6 @@ int evaluate_expression(){
 			break;
 		}else{
 			size++;
-			printf("%d\n", size);
 		}
 	}
 	list[size-1] = strtok(list[size-1], "\n");
@@ -238,15 +245,9 @@ void shell(){
 		}
 	} while (running);
 	printf(">>>>>>SHELL TERMINATED\n");
+	kill(0,SIGCHLD);
 }
-void on_child_exit(){
-	FILE * fpointer;
-	fpointer =fopen(filename, "a");
-	fputs("Child terminated\n", fpointer);
-	fclose(fpointer);
-//     reap_child_zombie();
-//     write_to_log_file("Child terminated");
-}
+
 void setup_environment(){
 	long size;
 	char *buf;
