@@ -164,6 +164,7 @@
 		if(strcmp(list[size-1], "&")==0){
 			background = 1;
 			list[size-1]=NULL;
+			size--;
 		}
 		regex_t regex_space;
 		regcomp(&regex_space, " ", 0);
