@@ -13,6 +13,7 @@ char acOpen[]  = {"\""};
 char acClose[] = {"\""};
 int running = 1;
 
+// called upon a child exit
 void on_child_exit(){
 	FILE * fpointer;
 	fpointer =fopen(filename, "a");
@@ -22,12 +23,14 @@ void on_child_exit(){
 		kill(0, SIGINT);
 	}
 }
+
+// a function to separate the input into pieces each piece separated by a space or whatever in between brackets
 char *parse_input ( char *input, char *delimit, char *openblock, char *closeblock) {
 	static char *token = NULL;
 	char *lead = NULL;
 	char *block = NULL;
-	int iBlock = 0;
-	int iBlockIndex = 0;
+	int i_block = 0;
+	int i_block_index = 0;
 	if ( input != NULL) {
 		token = input;
 		lead = input;
@@ -39,16 +42,16 @@ char *parse_input ( char *input, char *delimit, char *openblock, char *closebloc
 		}
 	}
 	while ( *token != '\0') {
-		if ( iBlock) {
-			if ( closeblock[iBlockIndex] == *token) {
-				iBlock = 0;
+		if ( i_block) {
+			if ( closeblock[i_block_index] == *token) {
+				i_block = 0;
 			}
 			token++;
 			continue;
 		}
 		if ( ( block = strchr ( openblock, *token)) != NULL) {
-			iBlock = 1;
-			iBlockIndex = block - openblock;
+			i_block = 1;
+			i_block_index = block - openblock;
 			token++;
 			continue;
 		}
@@ -61,11 +64,15 @@ char *parse_input ( char *input, char *delimit, char *openblock, char *closebloc
 	}
 	return lead;
 }
+
+// empty the list of the input
 void empty_list(){
 	for(int i=0;i<256;i++){
 		list[i]=NULL;
 	}
 }
+
+// evaluating expression and any variables
 int evaluate_expression(){
 	int size = 0;
 	regex_t regex_quote;
@@ -114,6 +121,8 @@ int evaluate_expression(){
 	}
 	return size;
 }
+
+// calling the built in functions
 void execute_shell_bultin(char * command, int size){
 	char* argument_list[size+1];
 	for(int i = 0;i<=size;i++){
@@ -156,6 +165,8 @@ void execute_shell_bultin(char * command, int size){
 		printf("\n");
 	}
 }
+
+// executing all other commands
 void execute_command(char * command, int size){
 	int status;
 	int background=0;
@@ -203,6 +214,8 @@ void execute_command(char * command, int size){
 		}
 	}
 }
+
+// check if command is a builtin or other
 int checkcommand(char * command){
 	if(command==NULL){
 		return -1;
@@ -217,6 +230,8 @@ int checkcommand(char * command){
 		return 0;
 	}
 }
+
+// main shell loop
 void shell(){
 	char *tok;
 	do
@@ -248,6 +263,7 @@ void shell(){
 	kill(0,SIGCHLD);
 }
 
+// setting up the enviorment directory
 void setup_environment(){
 	long size;
 	char *buf;
@@ -258,12 +274,15 @@ void setup_environment(){
 		chdir(ptr);
 	}
 }
+
+// parent process init
 void parent_main(){
 	signal (SIGCHLD, on_child_exit);
 	setup_environment();
 	shell();
 }
 
+// main
 int main(int argc, char const *argv[]){
 	printf(">>>>>>SHELL HAS STARTED\n");
 	parent_main();
