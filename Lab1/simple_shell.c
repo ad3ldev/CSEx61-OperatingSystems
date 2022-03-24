@@ -84,7 +84,7 @@
 			if(regexec(&regex_quote, list[i], 0, NULL, 0)!=REG_NOMATCH){
 				char b_quote[strlen(list[i])];
 				strncpy(b_quote, list[i], strlen(list[i]));
-				char without[sizeof(b_quote)-1];
+				char without[sizeof(b_quote)-2];
 				int j = 0;
 				int k = 0;
 				while(j<sizeof(b_quote)){
@@ -94,7 +94,7 @@
 					}
 					j++;
 				}
-				without[sizeof(without)-1]='\0';
+				without[k]='\0';
 				strcpy(list[i], without);
 			}if(regexec(&regex_dollar, list[i], 0, NULL, 0)!=REG_NOMATCH){
 				char dollar[strlen(list[i])];
@@ -104,10 +104,11 @@
 					without[j]=dollar[j+1];
 				}
 				without[sizeof(without)-1]= '\0';
-				if(getenv(without)!=NULL){
+				char * value = getenv(without);
+				if(value!=NULL){
 					strcpy(list[i], getenv(without));
 				}else{
-					strcpy(list[i], "");
+					strcpy(list[i], " ");
 				}
 			}
 		}
@@ -135,8 +136,9 @@
 			regcomp(&regex_equal, "=", 0);
 			for(int i=1;i<size;i++){
 				if(regexec(&regex_equal, argument_list[i], 0, NULL, 0)!=REG_NOMATCH){
-					char equal[strlen(argument_list[i])];
+					char equal[strlen(argument_list[i])+1];
 					strncpy(equal, argument_list[i], strlen(argument_list[i]));
+					equal[strlen(argument_list[i])] = '\0';
 					char * token = strtok(equal, "=");
 					char * equation[2];
 					int j = 0;
