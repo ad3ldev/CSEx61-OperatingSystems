@@ -13,6 +13,7 @@
 	#include <regex.h>
 	#include <stdlib.h>
 
+	char *filename = "log.txt";
 	char input[1024];
 	char * list[256];
 	char acOpen[]  = {"\""};
@@ -248,6 +249,10 @@
 		} while (running);
 	}
 	void on_child_exit(){
+		FILE * fpointer;
+		fpointer =fopen(filename, "w");
+		fputs("Child terminated\n", fpointer);
+		fclose(fpointer);
 	//     reap_child_zombie();
 	//     write_to_log_file("Child terminated");
 	}
