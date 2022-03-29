@@ -41,6 +41,24 @@ int return_value(char string[]){
     return atoi(temp);
 }
 
+void read_file(char * filename, int * row, int * col, int array[20][20]){
+    char r [256];
+    char c [256];
+    FILE *fp = fopen(filename, "r");
+    fscanf(fp, "%s", r); //Scan row
+    fscanf(fp, "%s", c); //Scan col
+    * row = return_value(r);
+    * col = return_value(c);
+    for(int i = 0; i<*row;i++){
+        for(int j = 0; j<*col;j++){
+            char * temp = malloc(sizeof(int));
+            fscanf(fp, "%s", temp);
+            array[i][j] = atoi(temp);
+        }
+    }
+    fclose(fp);
+}
+
 int main(int argc, const char * argv[]) {
 	struct timeval stop, start;
 	char * mat1 = malloc(64);
@@ -60,49 +78,8 @@ int main(int argc, const char * argv[]) {
 	strcat(mat1, ".txt");
 	strcat(mat2, ".txt");
 	strcat(matout, ".txt");
-    char row [256];
-    char col [256];
-    // File 1
-    FILE *fp1 = fopen(mat1, "r");
-    fscanf(fp1, "%s", row); //Scan row
-    fscanf(fp1, "%s", col); //Scan col
-    row1 = return_value(row);
-    col1 = return_value(col);
-    for(int i = 0; i<row1;i++){
-        for(int j = 0; j<col1;j++){
-            char * temp = malloc(sizeof(int));
-            fscanf(fp1, "%s", temp);
-            a[i][j] = atoi(temp);
-        }
-    }
-    for(int i = 0; i<row1;i++){
-        for(int j = 0; j<col1;j++){
-            printf("%d\t", a[i][j]);
-        }
-        printf("\n");
-    }
-    fclose(fp1);
-    // File 2
-    FILE *fp2 = fopen(mat2, "r");
-    fscanf(fp2, "%s", row); //Scan row
-    fscanf(fp2, "%s", col); //Scan col
-    row2 = return_value(row);
-    col2 = return_value(col);
-    for(int i = 0; i<row2;i++){
-        for(int j = 0; j<col2;j++){
-            char * temp = malloc(sizeof(int));
-            fscanf(fp2, "%s", temp);
-            b[i][j] = atoi(temp);
-        }
-    }
-    for(int i = 0; i<row2;i++){
-        for(int j = 0; j<col2;j++){
-            printf("%d\t", b[i][j]);
-        }
-        printf("\n");
-    }
-    fclose(fp2);
-
+    read_file(mat1, &row1, &col1, a);
+    read_file(mat2, &row2, &col2, b);
 	if(check_if_compatible(col1,row2)){
 		gettimeofday(&start, NULL); //start checking time
 			//your code goes here
