@@ -59,6 +59,33 @@ void read_file(char * filename, int * row, int * col, int array[20][20]){
     fclose(fp);
 }
 
+void per_matrix(int x, int y, int z){
+    for(int i = 0; i<x;i++){
+        for(int j = 0; j<y; j++){
+            c[i][j] = 0;
+            for(int k = 0; k<z; k++){
+                c[i][j]+=a[i][k]*b[k][j];
+            }
+        }
+    }
+}
+
+void per_row(int row, int y, int z){
+    for(int j = 0; j<y; j++){
+        c[row][j] = 0;
+        for(int k = 0; k<z; k++){
+            c[row][j]+=a[row][k]*b[k][j];
+        }
+    }
+}
+
+void per_element(int row, int col, int z){
+    c[row][col] = 0;
+    for(int k = 0; k<z; k++){
+        c[row][col]+=a[row][k]*b[k][col];
+    }
+}
+
 int main(int argc, const char * argv[]) {
 	struct timeval stop, start;
 	char * mat1 = malloc(64);
@@ -80,13 +107,47 @@ int main(int argc, const char * argv[]) {
 	strcat(matout, ".txt");
     read_file(mat1, &row1, &col1, a);
     read_file(mat2, &row2, &col2, b);
+    free(mat1);
+    free(mat2);
 	if(check_if_compatible(col1,row2)){
-		gettimeofday(&start, NULL); //start checking time
-			//your code goes here
-		gettimeofday(&stop, NULL); //end checking time
 
-		printf("Seconds taken %lu\n", stop.tv_sec - start.tv_sec);
+        // PER MATRIX
+		gettimeofday(&start, NULL); //start checking time
+        printf("\nPer Matrix:\n");
+		per_matrix(row1, col2, col1);
+        gettimeofday(&stop, NULL); //end checking time
+        printf("Seconds taken %lu\n", stop.tv_sec - start.tv_sec);
 		printf("Microseconds taken: %d\n", stop.tv_usec - start.tv_usec);
+
+        // PER ROW
+        gettimeofday(&start, NULL); //start checking time
+        printf("\nPer Row:\n");
+        for(int i = 0; i< row1;i++){
+            per_row(i, col2, col1);
+        }
+        gettimeofday(&stop, NULL); //end checking time
+        printf("Seconds taken %lu\n", stop.tv_sec - start.tv_sec);
+		printf("Microseconds taken: %d\n", stop.tv_usec - start.tv_usec);
+
+        // PER ELEMENT
+        gettimeofday(&start, NULL); //start checking time
+        printf("\nPer Element:\n");
+        for(int i = 0; i< row1 ;i++){
+            for(int j = 0; j<col2; j++){
+                per_element(i,j,col1);
+            }
+        }
+		gettimeofday(&stop, NULL); //end checking time
+        printf("Seconds taken %lu\n", stop.tv_sec - start.tv_sec);
+		printf("Microseconds taken: %d\n", stop.tv_usec - start.tv_usec);
+		
+        printf("\n");
+        for(int i = 0; i<row1; i++){
+            for(int j = 0; j<col2;j++){
+                printf("%d\t", c[i][j]);
+            }
+            printf("\n");
+        }
 	}else{
 		printf("Dimensions are not compatible\n");
 	}
