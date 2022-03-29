@@ -11,6 +11,12 @@
 #include <pthread.h>
 #include <string.h>
 
+typedef struct Element{
+    int row;
+    int col;
+}element;
+
+
 int a[20][20];
 int b[20][20];
 int c[20][20];
@@ -79,10 +85,10 @@ void per_row(int row, int y, int z){
     }
 }
 
-void per_element(int row, int col, int z){
-    c[row][col] = 0;
+void per_element(element * e, int z){
+    c[e->row][e->col] = 0;
     for(int k = 0; k<z; k++){
-        c[row][col]+=a[row][k]*b[k][col];
+        c[e->row][e->col]+=a[e->row][k]*b[k][e->col];
     }
 }
 
@@ -134,7 +140,10 @@ int main(int argc, const char * argv[]) {
         printf("\nPer Element:\n");
         for(int i = 0; i< row1 ;i++){
             for(int j = 0; j<col2; j++){
-                per_element(i,j,col1);
+                element e;
+                e.row = i;
+                e.col = j;
+                per_element(&e, col1);
             }
         }
 		gettimeofday(&stop, NULL); //end checking time
