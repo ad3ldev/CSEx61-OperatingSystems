@@ -15,7 +15,7 @@ int b[20][20];
 int c[20][20];
 
 int check_if_compatible(int col1, int row2){
-	if(col1 == NULL || row2 == NULL){
+	if(col1 == -1 || row2 == -1){
 		return 0;
 	}
 	if(col1 == row2){
@@ -26,24 +26,24 @@ int check_if_compatible(int col1, int row2){
 
 int main(int argc, const char * argv[]) {
 	struct timeval stop, start;
-	char * mat1;
-	char * mat2;
-	char * matout;
+	char * mat1 ="";
+	char * mat2 = "";
+	char * matout = "";
+	int row1 = -1,col1 = -1;
+	int row2 = -1,col2 = -1;
 	if(argc == 4){
-		mat1 = argv[1];
-		mat2 = argv[2];
-		matout = argv[3];
+		strcpy(mat1, argv[1]);
+		strcpy(mat2, argv[2]);
+		strcpy(matout, argv[3]);
 	}else{
 		mat1 = "a";
 		mat2 = "b";
 		matout = "c";
 	}
 	strcat(mat1, ".txt");
-    strcat(mat2, ".txt");
-    strcat(matout, ".txt");
+	strcat(mat2, ".txt");
+	strcat(matout, ".txt");
 	printf("%s\n", mat1);
-	int row1,col1;
-	int row2,col2;
 	if(check_if_compatible(col1,row2)){
 		gettimeofday(&start, NULL); //start checking time
 			//your code goes here
