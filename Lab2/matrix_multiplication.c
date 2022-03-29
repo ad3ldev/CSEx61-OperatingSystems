@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <pthread.h>
+#include <string.h>
 
 int a[20][20];
 int b[20][20];
@@ -25,20 +26,22 @@ int check_if_compatible(int col1, int row2){
 
 int main(int argc, const char * argv[]) {
 	struct timeval stop, start;
-    char * mat1;
-    char * mat2;
-    char * matout;
-    if(argc == 1){
-        mat1 = "a";
-        mat2 = "b";
-        matout = "c";
-    }else if(argc == 4){
-        mat1 = argv[1];
-        mat2 = argv[2];
-        matout = argv[3];
-    }
-    printf("%s %s %s\n", mat1, mat2, matout);
-
+	char * mat1;
+	char * mat2;
+	char * matout;
+	if(argc == 4){
+		mat1 = argv[1];
+		mat2 = argv[2];
+		matout = argv[3];
+	}else{
+		mat1 = "a";
+		mat2 = "b";
+		matout = "c";
+	}
+	strcat(mat1, ".txt");
+    strcat(mat2, ".txt");
+    strcat(matout, ".txt");
+	printf("%s\n", mat1);
 	int row1,col1;
 	int row2,col2;
 	if(check_if_compatible(col1,row2)){
