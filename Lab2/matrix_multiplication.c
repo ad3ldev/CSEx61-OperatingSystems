@@ -25,6 +25,22 @@ int check_if_compatible(int col1, int row2){
 	return 0;
 }
 
+int return_value(char string[]){
+    char temp[20];
+    int j = 0;
+    for(int i = 0; i< 256; i++){
+        if(string[i]>='0' && string[i]<='9'){
+            temp[j]=string[i];
+            j++;
+        }
+        if(string[i]=='\0'){
+            temp[j]='\0';
+            break;
+        }
+    }
+    return atoi(temp);
+}
+
 int main(int argc, const char * argv[]) {
 	struct timeval stop, start;
 	char * mat1 = malloc(64);
@@ -44,7 +60,49 @@ int main(int argc, const char * argv[]) {
 	strcat(mat1, ".txt");
 	strcat(mat2, ".txt");
 	strcat(matout, ".txt");
-	printf("%s, %s, %s\n", mat1, mat2, matout);
+    char row [256];
+    char col [256];
+    // File 1
+    FILE *fp1 = fopen(mat1, "r");
+    fscanf(fp1, "%s", row); //Scan row
+    fscanf(fp1, "%s", col); //Scan col
+    row1 = return_value(row);
+    col1 = return_value(col);
+    for(int i = 0; i<row1;i++){
+        for(int j = 0; j<col1;j++){
+            char * temp = malloc(sizeof(int));
+            fscanf(fp1, "%s", temp);
+            a[i][j] = atoi(temp);
+        }
+    }
+    for(int i = 0; i<row1;i++){
+        for(int j = 0; j<col1;j++){
+            printf("%d\t", a[i][j]);
+        }
+        printf("\n");
+    }
+    fclose(fp1);
+    // File 2
+    FILE *fp2 = fopen(mat2, "r");
+    fscanf(fp2, "%s", row); //Scan row
+    fscanf(fp2, "%s", col); //Scan col
+    row2 = return_value(row);
+    col2 = return_value(col);
+    for(int i = 0; i<row2;i++){
+        for(int j = 0; j<col2;j++){
+            char * temp = malloc(sizeof(int));
+            fscanf(fp2, "%s", temp);
+            b[i][j] = atoi(temp);
+        }
+    }
+    for(int i = 0; i<row2;i++){
+        for(int j = 0; j<col2;j++){
+            printf("%d\t", b[i][j]);
+        }
+        printf("\n");
+    }
+    fclose(fp2);
+
 	if(check_if_compatible(col1,row2)){
 		gettimeofday(&start, NULL); //start checking time
 			//your code goes here
@@ -53,7 +111,7 @@ int main(int argc, const char * argv[]) {
 		printf("Seconds taken %lu\n", stop.tv_sec - start.tv_sec);
 		printf("Microseconds taken: %d\n", stop.tv_usec - start.tv_usec);
 	}else{
-		printf("Dimensions are not compatiable\n");
+		printf("Dimensions are not compatible\n");
 	}
 	return 0;
 }
