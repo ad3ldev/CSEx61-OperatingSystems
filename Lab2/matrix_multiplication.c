@@ -56,28 +56,33 @@ int return_value(char string[]){
 void read_file(char * filename, int * row, int * col, int array[20][20]){
     char r [256];
     char c [256];
-    FILE *fp = fopen(filename, "r");
-    fscanf(fp, "%s", r); //Scan row
-    fscanf(fp, "%s", c); //Scan col
-    * row = return_value(r);
-    * col = return_value(c);
-    for(int i = 0; i<*row;i++){
-        for(int j = 0; j<*col;j++){
-            char * temp = malloc(sizeof(int));
-            fscanf(fp, "%s", temp);
-            array[i][j] = atoi(temp);
-            free(temp);
+    FILE *fp;
+    if(fp = fopen(filename, "r")){
+        fscanf(fp, "%s", r); //Scan row
+        fscanf(fp, "%s", c); //Scan col
+        * row = return_value(r);
+        * col = return_value(c);
+        for(int i = 0; i<*row;i++){
+            for(int j = 0; j<*col;j++){
+                char * temp = malloc(sizeof(int));
+                fscanf(fp, "%s", temp);
+                array[i][j] = atoi(temp);
+                free(temp);
+            }
         }
+        fclose(fp);
+    }else{
+        printf("File not found\n");
     }
-    fclose(fp);
 }
 
 void write_files(char * filename){
     int row = row1;
     int col = col2;
-
+    
     // PER MATRIX
-    char * file_matrix = filename;
+    char * file_matrix = malloc(64);
+    memcpy(file_matrix, filename,strlen(filename)+1);
     strcat(file_matrix, "_per_matrix.txt");
     FILE *fp = fopen(file_matrix, "w");
     fprintf(fp, "Method: A thread per matrix\nrow=%d col=%d\n", row, col);
@@ -90,7 +95,8 @@ void write_files(char * filename){
     fclose(fp);
 
     // PER ROW
-    char * file_row = filename;
+    char * file_row = malloc(64);
+    memcpy(file_row, filename,strlen(filename)+1);
     strcat(file_row, "_per_row.txt");
     fp = fopen(file_row, "w");
     fprintf(fp, "Method: A thread per row\nrow=%d col=%d\n", row, col);
@@ -103,7 +109,8 @@ void write_files(char * filename){
     fclose(fp);
 
     // PER ELEMENT
-    char * file_element = filename;
+    char * file_element = malloc(64);
+    memcpy(file_element, filename,strlen(filename)+1);
     strcat(file_element, "_per_element.txt");
     fp = fopen(file_element, "w");
     fprintf(fp, "Method: A thread per element\nrow=%d col=%d\n", row, col);
@@ -114,6 +121,9 @@ void write_files(char * filename){
         fprintf(fp,"\n");
     }
     fclose(fp);
+    free(file_matrix);
+    free(file_row);
+    free(file_element);
 }
 
 void per_matrix(){
