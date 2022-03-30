@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <pthread.h>
 #include <string.h>
+#include <pthread.h>
 
 #define MAX_SIZE 20
 
@@ -181,7 +181,7 @@ int main(int argc, const char * argv[]) {
 		per_matrix();
         gettimeofday(&stop, NULL); //end checking time
         printf("Number of threads: %d\n", threads);
-		printf("Microseconds taken: %d\n", stop.tv_usec - start.tv_usec);
+		printf("Microseconds taken: %ld\n", stop.tv_usec - start.tv_usec);
 
         // PER ROW
         threads = 0;
@@ -197,7 +197,7 @@ int main(int argc, const char * argv[]) {
         }
         gettimeofday(&stop, NULL); //end checking time
         printf("Number of threads: %d\n", threads);
-		printf("Microseconds taken: %d\n", stop.tv_usec - start.tv_usec);
+		printf("Microseconds taken: %ld\n", stop.tv_usec - start.tv_usec);
         for(int i =0 ;i<MAX_SIZE; i++){
             pthread_join(threads_per_row[i],NULL);
         }
@@ -221,7 +221,7 @@ int main(int argc, const char * argv[]) {
         }
 		gettimeofday(&stop, NULL); //end checking time
         printf("Number of threads: %d\n", threads);
-		printf("Microseconds taken: %d\n", stop.tv_usec - start.tv_usec);
+		printf("Microseconds taken: %ld\n", stop.tv_usec - start.tv_usec);
         for(int i =0 ;i<MAX_SIZE * MAX_SIZE; i++){
             pthread_join(threads_per_element[i],NULL);
         }
