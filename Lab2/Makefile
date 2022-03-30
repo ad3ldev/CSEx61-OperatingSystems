@@ -1,2 +1,2 @@
-matrix_multiple: matrix_multiplication.c
-	gcc -o matrix_multiple matrix_multiplication.c
+matMultp: matrix_multiplication.c
+	gcc -o matMultp matrix_multiplication.c
