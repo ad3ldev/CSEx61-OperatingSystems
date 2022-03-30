@@ -174,29 +174,36 @@ int main(int argc, const char * argv[]) {
     free(mat2);
 	if(check_if_compatible(col1,row2)){
         // PER MATRIX
+        int threads = 0;
 		gettimeofday(&start, NULL); //start checking time
         printf("\nPer Matrix:\n");
+        threads++;
 		per_matrix();
         gettimeofday(&stop, NULL); //end checking time
+        printf("Number of threads: %d\n", threads);
 		printf("Microseconds taken: %d\n", stop.tv_usec - start.tv_usec);
 
         // PER ROW
+        threads = 0;
         pthread_t threads_per_row[MAX_SIZE];
         gettimeofday(&start, NULL); //start checking time
         printf("\nPer Row:\n");
         for(int i = 0; i< row1;i++){
+            threads++;
             int rc = pthread_create(&threads_per_row[i], NULL, per_row, (void *) i);
             if(rc){
                 printf("ERROR; from pthread_create()\n");
             }
         }
         gettimeofday(&stop, NULL); //end checking time
+        printf("Number of threads: %d\n", threads);
 		printf("Microseconds taken: %d\n", stop.tv_usec - start.tv_usec);
         for(int i =0 ;i<MAX_SIZE; i++){
             pthread_join(threads_per_row[i],NULL);
         }
         
         // PER ELEMENT
+        threads = 0;
         pthread_t threads_per_element[MAX_SIZE * MAX_SIZE];
         gettimeofday(&start, NULL); //start checking time
         printf("\nPer Element:\n");
@@ -205,6 +212,7 @@ int main(int argc, const char * argv[]) {
                 struct element * e = malloc(sizeof(struct element));
                 e->row = i;
                 e->col = j;
+                threads++;
                 int rc = pthread_create(&threads_per_element[i*col2 + j], NULL, per_element, (void *) e);
                 if(rc){
                     printf("ERROR; from pthread_create()\n");
@@ -212,6 +220,7 @@ int main(int argc, const char * argv[]) {
             }
         }
 		gettimeofday(&stop, NULL); //end checking time
+        printf("Number of threads: %d\n", threads);
 		printf("Microseconds taken: %d\n", stop.tv_usec - start.tv_usec);
         for(int i =0 ;i<MAX_SIZE * MAX_SIZE; i++){
             pthread_join(threads_per_element[i],NULL);
