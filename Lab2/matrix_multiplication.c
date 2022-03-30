@@ -178,8 +178,7 @@ int main(int argc, const char * argv[]) {
         printf("\nPer Matrix:\n");
 		per_matrix();
         gettimeofday(&stop, NULL); //end checking time
-        printf("Seconds taken %lu\n", stop.tv_sec - start.tv_sec);
-		printf("Microseconds taken: %lu\n", stop.tv_usec - start.tv_usec);
+		printf("Microseconds taken: %d\n", stop.tv_usec - start.tv_usec);
 
         // PER ROW
         pthread_t threads_per_row[MAX_SIZE];
@@ -192,8 +191,7 @@ int main(int argc, const char * argv[]) {
             }
         }
         gettimeofday(&stop, NULL); //end checking time
-        printf("Seconds taken %lu\n", stop.tv_sec - start.tv_sec);
-		printf("Microseconds taken: %lu\n", stop.tv_usec - start.tv_usec);
+		printf("Microseconds taken: %d\n", stop.tv_usec - start.tv_usec);
         for(int i =0 ;i<MAX_SIZE; i++){
             pthread_join(threads_per_row[i],NULL);
         }
@@ -214,8 +212,7 @@ int main(int argc, const char * argv[]) {
             }
         }
 		gettimeofday(&stop, NULL); //end checking time
-        printf("Seconds taken %lu\n", stop.tv_sec - start.tv_sec);
-		printf("Microseconds taken: %lu\n", stop.tv_usec - start.tv_usec);
+		printf("Microseconds taken: %d\n", stop.tv_usec - start.tv_usec);
         for(int i =0 ;i<MAX_SIZE * MAX_SIZE; i++){
             pthread_join(threads_per_element[i],NULL);
         }
