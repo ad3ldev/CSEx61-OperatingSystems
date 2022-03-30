@@ -162,9 +162,9 @@ int main(int argc, const char * argv[]) {
 		strncpy(mat2, argv[2], strlen(argv[2]));
 		strncpy(matout, argv[3], strlen(argv[3]));
 	}else{
-		mat1 = "a";
-		mat2 = "b";
-		matout = "c";
+		strncpy(mat1, "a", 1);
+		strncpy(mat2, "b", 1);
+        strncpy(matout, "c", 1);
 	}
 	strcat(mat1, ".txt");
 	strcat(mat2, ".txt");
@@ -198,7 +198,7 @@ int main(int argc, const char * argv[]) {
         gettimeofday(&stop, NULL); //end checking time
         printf("Number of threads: %d\n", threads);
 		printf("Microseconds taken: %ld\n", stop.tv_usec - start.tv_usec);
-        for(int i =0 ;i<MAX_SIZE; i++){
+        for(int i =0 ;i<threads; i++){
             pthread_join(threads_per_row[i],NULL);
         }
         
@@ -222,13 +222,13 @@ int main(int argc, const char * argv[]) {
 		gettimeofday(&stop, NULL); //end checking time
         printf("Number of threads: %d\n", threads);
 		printf("Microseconds taken: %ld\n", stop.tv_usec - start.tv_usec);
-        for(int i =0 ;i<MAX_SIZE * MAX_SIZE; i++){
+        for(int i =0 ;i<threads; i++){
             pthread_join(threads_per_element[i],NULL);
         }
         write_files(matout);
         free(matout);
 	}else{
-		printf("Dimensions are not compatible\n");
+		printf("Invalid Input\n");
 	}
 	return 0;
 }
