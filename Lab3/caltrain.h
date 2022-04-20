@@ -1,5 +1,10 @@
 #include <pthread.h>
 
+// Station has 2 conditions:
+// 1- arrived if the train have arrived
+// 2- full if the train is full and ready to go
+// Station has 3 counters for each phase of the passengers
+// waiting, in process of boarding and empty seats
 struct station {
 	pthread_mutex_t lock;
 	pthread_cond_t arrived;
