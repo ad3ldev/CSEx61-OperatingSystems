@@ -1,7 +1,12 @@
 #include <pthread.h>
 
 struct station {
-	// FILL ME IN
+	pthread_mutex_t lock;
+	pthread_cond_t arrived;
+	pthread_cond_t full;
+	int waiting;
+	int boarding;
+	int empty;
 };
 
 void station_init(struct station *station);
